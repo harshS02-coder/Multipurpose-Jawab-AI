@@ -3,15 +3,6 @@ from flask_cors import CORS
 import os
 from dotenv import load_dotenv
 
-from file_processor import(
-    load_and_extract_text,
-    chunk_text,
-    create_embedding,
-    store_in_pinecone,
-    retrieve_from_pinecone,
-    generate_answer
-)
-
 app = Flask(__name__)
 CORS(app)  # This will enable CORS for all routes
 
@@ -44,10 +35,13 @@ def upload_and_process():
 
         try:
             print(f"Starting the pipeline...")
+            # Import file processing helpers here to avoid requiring heavy deps at app startup
+            from file_processor import load_and_extract_text, chunk_text, create_embedding, store_in_pinecone
+
             text = load_and_extract_text(filepath)
             if not text:
                 return jsonify({"error": "Failed to extract, need text file.."}),400
-            
+
             chunks = chunk_text(text)
             if not chunks:
                 return jsonify({"error": "Failed to chunk the text."}),400
@@ -70,7 +64,7 @@ print("Upload endpoint is ready.")
 def chat():
     print("Received a chat Request")
     data = request.get_json()
-    print(f"REeceived data: {data}")
+    print(f"Received data: {data}")
     user_question = data.get('question')
 
     chat_history = data.get('history', [])  
@@ -79,8 +73,11 @@ def chat():
         return jsonify({"error": "No question provided."}), 400
     
     try:
+        from file_processor import retrieve_from_pinecone, generate_answer
+
         retrieved_chunks = retrieve_from_pinecone(user_question)
-        final_answer = generate_answer(retrieved_chunks, user_question, chat_history)
+        # generate_answer expects (query:str, context_chunks:list[str], chat_history)
+        final_answer = generate_answer(user_question, retrieved_chunks, chat_history)
 
         return jsonify({"answer": final_answer, "sources": retrieved_chunks}), 200
 

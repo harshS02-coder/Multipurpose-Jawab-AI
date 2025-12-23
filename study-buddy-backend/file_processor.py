@@ -139,7 +139,7 @@ def generate_answer(query:str, context_chunks:list[str], chat_history)->str:
         return "Error: GOOGLE_API_KEY environment variable not set."
 
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-2.5-flash-preview-05-20')
+    model = genai.GenerativeModel('gemini-2.5-flash')
 
     context = "\n".join(context_chunks)
 

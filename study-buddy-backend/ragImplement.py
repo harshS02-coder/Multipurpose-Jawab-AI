@@ -9,7 +9,7 @@ from langchain.schema.output_parser import StrOutputParser
 load_dotenv()
 
 print("initializing llm and embeddings...")
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-preview-05-20")
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
 embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
 
 print("initialized llm and embeddings...")
