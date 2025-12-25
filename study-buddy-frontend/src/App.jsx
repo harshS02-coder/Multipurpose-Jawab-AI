@@ -1,11 +1,22 @@
 // src/App.jsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FileUpload from './components/FileUpload';
-import ChatWindow from './components/chatWindow'; // Import the new component
+import ChatWindow from './components/chatWindow';
 import './App.css';
 
 function App() {
   const [isFileUploaded, setIsFileUploaded] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    const stored = typeof window !== 'undefined' ? localStorage.getItem('theme') : null;
+    if (stored === 'light' || stored === 'dark') return stored;
+    const prefersDark = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return prefersDark ? 'dark' : 'light';
+  });
+
+  useEffect(() => {
+    document.body.classList.toggle('theme-dark', theme === 'dark');
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   const handleUploadSuccess = () => {
     setIsFileUploaded(true);
@@ -18,21 +29,73 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Study Buddy-Jawab AI</h1>
-        {isFileUploaded && (
-          <button onClick={handleNewDocument} className="new-doc-button">
-            Upload New Document
+        <div className="brand">
+          <span className="brand-icon" aria-hidden>
+            📚
+          </span>
+          <div className="brand-text">
+            <h1 className="title">Study Buddy · Jawab AI</h1>
+            <p className="subtitle">Upload notes, ask questions, and learn faster</p>
+          </div>
+        </div>
+
+        <div className="header-actions">
+          <button
+            className="icon-btn"
+            title="Toggle theme"
+            aria-label="Toggle theme"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          >
+            {theme === 'dark' ? '🌙 Dark' : '☀️ Light'}
           </button>
-        )}
+          {isFileUploaded && (
+            <button onClick={handleNewDocument} className="action-btn">
+              Upload New Document
+            </button>
+          )}
+        </div>
       </header>
-      <main>
+
+      <main className="content">
         {!isFileUploaded ? (
-          <FileUpload onUploadSuccess={handleUploadSuccess} />
+          <div className="grid">
+            <section className="glass-card upload-card">
+              <h2 className="section-title">Get Started</h2>
+              <p className="section-help">Drop a PDF or click to select</p>
+              <FileUpload onUploadSuccess={handleUploadSuccess} />
+              <div className="feature-badges">
+                <span className="badge">PDF</span>
+                <span className="badge">Fast RAG</span>
+                <span className="badge">Sources</span>
+              </div>
+            </section>
+
+            <aside className="glass-card info-card">
+              <h3 className="info-title">What you can do</h3>
+              <ul className="info-list">
+                <li>Summarize chapters and key concepts</li>
+                <li>Ask targeted questions about any section</li>
+                <li>See cited source snippets for each answer</li>
+              </ul>
+              <div className="tip">
+                Pro tip: Ask specific questions like “Explain theorem 2.3 with an example”.
+              </div>
+            </aside>
+          </div>
         ) : (
-          // Replace the old div with the ChatWindow component
-          <ChatWindow />
+          <section className="glass-card chat-card">
+            <div className="chat-header">
+              <h2 className="section-title">Your Study Session</h2>
+              <p className="section-help">Ask anything from the uploaded document</p>
+            </div>
+            <ChatWindow />
+          </section>
         )}
       </main>
+
+      <footer className="App-footer">
+        <span>Built for focused learning • Stay curious ✨</span>
+      </footer>
     </div>
   );
 }
