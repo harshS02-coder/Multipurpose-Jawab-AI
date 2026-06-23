@@ -12,35 +12,82 @@ function FileUpload({ onUploadSuccess , activeMode }) {
     setFile(event.target.files[0]);
   };
 
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+  //   if (!file) {
+  //     setMessage('Please select a file first.');
+  //     return;
+  //   }
+
+  //   setIsUploading(true);
+  //   setMessage('Uploading and processing file...');
+  //   const formData = new FormData();
+  //   formData.append('file', file);
+  //   formData.append('use_case', activeMode);
+
+  //   try {
+  //     const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/upload`, formData);
+
+  //     const {document_id} = response.data;
+  //     console.log('Upload response:', response.data);
+  //     console.log('Document ID:', document_id);
+
+  //     setMessage(response.data?.message || 'Upload successful');
+  //     onUploadSuccess(document_id); // Notify the parent component
+  //   } catch (error) {
+  //     console.error('Upload error:', error);
+  //     const serverMsg = error.response?.data?.error || error.response?.data?.message;
+  //     setMessage(serverMsg ? `Error: ${serverMsg}` : 'An error occurred during upload.');
+  //   } finally {
+  //     setIsUploading(false);
+  //   }
+  // };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!file) {
-      setMessage('Please select a file first.');
-      return;
-    }
+    if (!file) { setMessage('Please select a file first.'); return; }
 
     setIsUploading(true);
-    setMessage('Uploading and processing file...');
+    setMessage('Uploading...');
     const formData = new FormData();
     formData.append('file', file);
     formData.append('use_case', activeMode);
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/upload`, formData);
+      const { document_id } = response.data;
 
-      const {document_id} = response.data;
-      console.log('Upload response:', response.data);
-      console.log('Document ID:', document_id);
+      // Poll status until DONE
+      setMessage('Processing your document...');
+      await pollUntilReady(document_id);
 
-      setMessage(response.data?.message || 'Upload successful');
-      onUploadSuccess(document_id); // Notify the parent component
+      setMessage('Ready!');
+      onUploadSuccess(document_id);
+
     } catch (error) {
-      console.error('Upload error:', error);
       const serverMsg = error.response?.data?.error || error.response?.data?.message;
       setMessage(serverMsg ? `Error: ${serverMsg}` : 'An error occurred during upload.');
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const pollUntilReady = async (document_id) => {
+    const maxAttempts = 30;   // 30 × 3s = 90 seconds max wait
+    for (let i = 0; i < maxAttempts; i++) {
+      await new Promise(res => setTimeout(res, 3000)); // wait 3s
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/status/${document_id}`);
+        const status = res.data.status;
+        setMessage(`Processing... (${status})`);
+        if (status === 'DONE') return;
+        if (status === 'FAILED') throw new Error('Ingestion failed on server.');
+      } catch (e) {
+        if (e.message === 'Ingestion failed on server.') throw e;
+        // network blip — keep polling
+      }
+    }
+    throw new Error('Timed out waiting for document to process.');
   };
 
   return (
