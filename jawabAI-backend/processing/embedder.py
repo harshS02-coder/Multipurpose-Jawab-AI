@@ -20,7 +20,6 @@ from config.settings import PINECONE_API_KEY
 pc = Pinecone(api_key=PINECONE_API_KEY)
 
 def embed(texts: list[str]) -> list[list[float]]:
-    """Embed texts using Pinecone's hosted inference — no local model loaded."""
     if not texts:
         return []
 
@@ -29,14 +28,25 @@ def embed(texts: list[str]) -> list[list[float]]:
         inputs=texts,
         parameters={"input_type": "passage", "truncate": "END"}
     )
-    return [item["values"] for item in result.data]
+    # handle both dict and object response formats
+    embeddings = []
+    for item in result.data:
+        if isinstance(item, dict):
+            embeddings.append(item["values"])
+        else:
+            embeddings.append(item.values)
+
+    print(f"✅ Embedding dim check: {len(embeddings[0])} dimensions")
+    return embeddings
 
 
 def embed_query(text: str) -> list[float]:
-    """Embed a single query string."""
     result = pc.inference.embed(
         model="multilingual-e5-large",
         inputs=[text],
         parameters={"input_type": "query", "truncate": "END"}
     )
-    return result.data[0]["values"]
+    item = result.data[0]
+    if isinstance(item, dict):
+        return item["values"]
+    return item.values
