@@ -95,6 +95,11 @@ async def upload(
 async def chat_api(payload: dict):
     return chat(payload)
 
+@app.get("/cache/flush")
+async def flush_cache():
+    redis_client.flushdb()
+    return {"message": "Redis cache flushed"}
+
 # Required for Railway to bind correct port
 if __name__ == "__main__":
     import uvicorn
