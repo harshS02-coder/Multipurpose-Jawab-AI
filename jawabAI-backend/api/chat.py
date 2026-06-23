@@ -1,4 +1,4 @@
-from processing.embedder import embed
+from processing.embedder import embed, embed_query
 from retrieval.pinecone_client import query
 from llm.generator import generate_answer
 from storage.redis_client import redis_client
@@ -35,7 +35,7 @@ def chat(payload):
         return cached_response
 
     namespace = f"{use_case}:{document_id}"
-    query_vec = embed([question])[0]
+    query_vec = embed_query(question)
 
     results = query(query_vec, namespace, document_id=document_id)
     
