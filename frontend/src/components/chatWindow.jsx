@@ -172,6 +172,41 @@ function timeNow() {
 }
 
 /* ── Sources accordion ────────────────────────────────────────── */
+// function Sources({ chunks }) {
+//   const [isOpen, setIsOpen] = useState(false);
+//   if (!chunks || chunks.length === 0) return null;
+
+//   return (
+//     <div className="cw-sources">
+//       <button
+//         className={`cw-sources-toggle ${isOpen ? 'open' : ''}`}
+//         onClick={() => setIsOpen(!isOpen)}
+//       >
+//         <span className="cw-sources-icon">
+//           <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+//             <path d="M2 4h12M2 8h8M2 12h6" stroke="currentColor" strokeWidth="1.5"
+//               strokeLinecap="round"/>
+//           </svg>
+//         </span>
+//         {chunks.length} source{chunks.length > 1 ? 's' : ''}
+//         <span className={`cw-chevron ${isOpen ? 'open' : ''}`}>
+//           <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+//             <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+//           </svg>
+//         </span>
+//       </button>
+//       <div className={`cw-sources-body ${isOpen ? 'open' : ''}`}>
+//         {chunks.map((chunk, i) => (
+//           <div key={i} className="cw-source-item">
+//             <span className="cw-source-num">{i + 1}</span>
+//             <p>{chunk}</p>
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
+
 function Sources({ chunks }) {
   const [isOpen, setIsOpen] = useState(false);
   if (!chunks || chunks.length === 0) return null;
@@ -199,7 +234,12 @@ function Sources({ chunks }) {
         {chunks.map((chunk, i) => (
           <div key={i} className="cw-source-item">
             <span className="cw-source-num">{i + 1}</span>
-            <p>{chunk}</p>
+            {/* UPDATED: Render the specific properties of the chunk object */}
+            <p>
+              <strong>Source:</strong> {chunk.source} <br/>
+              <strong>Page:</strong> {chunk.page} <br/>
+              <strong>Score:</strong> {chunk.score}
+            </p>
           </div>
         ))}
       </div>
