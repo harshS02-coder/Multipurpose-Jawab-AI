@@ -5,11 +5,8 @@ function Navbar({ activeMode, setActiveMode, theme, setTheme }) {
     <header className="App-header">
       {/* Brand */}
       <div className="brand">
-        <span className="brand-icon" aria-hidden>
-          🤖
-        </span>
         <div className="brand-text">
-          <h1 className="title">Jawab AI</h1>
+          <h1 className="title">Choose Your Domain</h1>
           <p className="subtitle">
             {activeMode === 'study'
               ? 'Your AI study companion'
@@ -26,18 +23,18 @@ function Navbar({ activeMode, setActiveMode, theme, setTheme }) {
           className={`nav-tab ${activeMode === 'study' ? 'active' : ''}`}
           onClick={() => setActiveMode('study')}
         >
-          📚 Study Buddy
+          Study Buddy
         </button>
 
         <button
           className={`nav-tab ${activeMode === 'invoice' ? 'active' : ''}`}
           onClick={() => setActiveMode('invoice')}
         >
-          🧾 Invoices
+          Invoices
         </button>
 
         <button className="nav-tab disabled" title="Coming soon">
-          🚀 More
+          More
         </button>
       </nav>
 
@@ -48,7 +45,7 @@ function Navbar({ activeMode, setActiveMode, theme, setTheme }) {
           title="Toggle theme"
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
         >
-          {theme === 'dark' ? '🌙 Dark' : '☀️ Light'}
+          {theme === 'dark' ? '🌙' : '☀️'}
         </button>
       </div>
     </header>

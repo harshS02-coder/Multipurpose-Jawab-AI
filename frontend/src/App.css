@@ -456,7 +456,7 @@ body.theme-dark .upload-message {
 .upload-new-btn:active { transform: translateY(0); opacity: 0.92; }
 
 /* ─── Chat Window ────────────────────────────────────────────── */
-.chat-window {
+/* .chat-window {
   display: flex;
   flex-direction: column;
   height: 62vh;
@@ -655,7 +655,7 @@ body.theme-dark .source-chunk { background: rgba(61,125,255,0.10); }
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
-}
+} */
 
 /* ─── Footer ─────────────────────────────────────────────────── */
 .App-footer {

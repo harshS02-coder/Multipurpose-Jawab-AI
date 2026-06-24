@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import MainContent from './components/MainContent';
 import LandingPage from "./components/LandingPage";
 import './App.css';
+import './chat.css';
 
 // ── Existing Application Workspace ────────────────────────────
 function MainDashboard() {
